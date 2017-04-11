@@ -106,7 +106,6 @@ class AtomSandboxedRenderFrameObserver : public content::RenderFrameObserver {
   }
 
   void DidCreateScriptContext(v8::Handle<v8::Context> context,
-                              int extension_group,
                               int world_id) override {
     if (world_id_ != -1 && world_id_ != world_id)
       return;

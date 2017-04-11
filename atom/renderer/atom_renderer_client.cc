@@ -40,10 +40,6 @@ enum World {
   ISOLATED_WORLD = 999
 };
 
-enum ExtensionGroup {
-  MAIN_GROUP = 1
-};
-
 // Helper class to forward the messages to the client.
 class AtomRenderFrameObserver : public content::RenderFrameObserver {
  public:
@@ -73,8 +69,7 @@ class AtomRenderFrameObserver : public content::RenderFrameObserver {
 
     // Create initial script context in isolated world
     blink::WebScriptSource source("void 0");
-    frame->executeScriptInIsolatedWorld(
-        World::ISOLATED_WORLD, &source, 1, ExtensionGroup::MAIN_GROUP);
+    frame->executeScriptInIsolatedWorld(World::ISOLATED_WORLD, &source, 1);
   }
 
   void SetupMainWorldOverrides(v8::Handle<v8::Context> context) {
@@ -125,7 +120,6 @@ class AtomRenderFrameObserver : public content::RenderFrameObserver {
   }
 
   void DidCreateScriptContext(v8::Handle<v8::Context> context,
-                              int extension_group,
                               int world_id) override {
     if (ShouldNotifyClient(world_id))
       renderer_client_->DidCreateScriptContext(context, render_frame_);
@@ -301,8 +295,7 @@ void AtomRendererClient::WillDestroyWorkerContextOnWorkerThread(
 v8::Local<v8::Context> AtomRendererClient::GetContext(
     blink::WebFrame* frame, v8::Isolate* isolate) {
   if (isolated_world())
-    return frame->worldScriptContext(
-        isolate, World::ISOLATED_WORLD, ExtensionGroup::MAIN_GROUP);
+    return frame->worldScriptContext(isolate, World::ISOLATED_WORLD);
   else
     return frame->mainWorldScriptContext();
 }
