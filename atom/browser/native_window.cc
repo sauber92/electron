@@ -683,6 +683,12 @@ void NativeWindow::NotifyWindowUnresponsive() {
 void NativeWindow::NotifyReadyToShow() {
   for (NativeWindowObserver& observer : observers_)
     observer.OnReadyToShow();
+
+  if (!IsVisible()) {
+    // Undo Show() call in DidFirstVisuallyNonEmptyPaint(). Note that this
+    // will also fire the visibilitychange event.
+    web_contents()->GetRenderWidgetHostView()->Hide();
+  }
 }
 
 }  // namespace atom
